@@ -144,6 +144,76 @@
       gap: 20px;
     }
 
+    /* Modal de galeria */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.6);
+      z-index: 9999;
+      padding: 24px;
+    }
+    .modal[aria-hidden="false"] { display: flex; }
+
+    .modal-content {
+      background: #fff;
+      max-width: 1000px;
+      width: 100%;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      position: absolute;
+      right: 28px;
+      top: 20px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .modal-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .modal-main img {
+      max-width: 720px;
+      max-height: 60vh;
+      width: auto;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    .modal-prev, .modal-next {
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-size: 26px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .modal-caption { display:flex; gap:12px; align-items:center; justify-content:space-between; }
+    .modal-caption h3 { margin:0; color:var(--accent-color); }
+    .modal-thumbs { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .modal-thumbs img { width:72px; height:72px; object-fit:cover; border-radius:6px; cursor:pointer; opacity:0.9; border:2px solid transparent; }
+    .modal-thumbs img.active { outline:2px solid var(--accent-color); border-color:var(--accent-color); opacity:1; }
+
+
     .produto {
       position: relative;
       overflow: hidden;
@@ -244,36 +314,54 @@
 
   <h2 class="galeria-title">Nossos Produtos</h2>
   <section class="galeria">
-    <a class="produto" href="https://wa.me/5548999159246?text=Tenho%20interesse%20nesse%20produto%3A%20Porta%20Chaves" target="_blank" rel="noopener" aria-label="Tenho interesse no Porta Chaves">
+    <!-- Cada produto agora abre uma modal de galeria. Adicione outros nomes de arquivo separados por vírgula em data-images se quiser várias fotos (ex: 'produto-1.jpg,produto-2.jpg') -->
+    <a class="produto" href="#" data-name="Porta Chaves" data-images="porta-chaves.jpg" aria-label="Galeria Porta Chaves">
       <img src="imagens/porta-chaves.jpg" alt="Porta Chaves Artesanal">
       <span>Porta Chaves</span>
     </a>
 
-    <a class="produto" href="https://wa.me/5548999159246?text=Tenho%20interesse%20nesse%20produto%3A%20Porta%20Temperos" target="_blank" rel="noopener" aria-label="Tenho interesse no Porta Temperos">
+    <a class="produto" href="#" data-name="Porta Temperos" data-images="porta-temperos.jpg" aria-label="Galeria Porta Temperos">
       <img src="imagens/porta-temperos.jpg" alt="Porta Temperos de Madeira">
       <span>Porta Temperos</span>
     </a>
 
-    <a class="produto" href="https://wa.me/5548999159246?text=Tenho%20interesse%20nesse%20produto%3A%20Suporte%20de%20Pato" target="_blank" rel="noopener" aria-label="Tenho interesse no Suporte de Pato">
+    <a class="produto" href="#" data-name="Suporte de Pato" data-images="pato-papel-toalha.jpg" aria-label="Galeria Suporte de Pato">
       <img src="imagens/pato-papel-toalha.jpg" alt="Suporte de Pato para Papel Toalha">
       <span>Suporte de Pato</span>
     </a>
 
-    <a class="produto" href="https://wa.me/5548999159246?text=Tenho%20interesse%20nesse%20produto%3A%20Gato%20Trava%20Porta" target="_blank" rel="noopener" aria-label="Tenho interesse no Gato Trava Porta">
+    <a class="produto" href="#" data-name="Gato Trava Porta" data-images="gato-trava-porta.jpg" aria-label="Galeria Gato Trava Porta">
       <img src="imagens/gato-trava-porta.jpg" alt="Gato Preto Trava Porta">
       <span>Gato Trava Porta</span>
     </a>
 
-    <a class="produto" href="https://wa.me/5548999159246?text=Tenho%20interesse%20nesse%20produto%3A%20Casinha%20Pet" target="_blank" rel="noopener" aria-label="Tenho interesse na Casinha Pet">
+    <a class="produto" href="#" data-name="Casinha Pet" data-images="casinha-pet.jpg,casinha-pet-3.jpg,casinha-pet-1.jpg" aria-label="Galeria Casinha Pet">
       <img src="imagens/casinha-pet.jpg" alt="Casinha de Madeira para Pets">
       <span>Casinha Pet</span>
     </a>
 
-    <a class="produto" href="https://wa.me/5548999159246?text=Tenho%20interesse%20nesse%20produto%3A%20Comedouro%20Pet" target="_blank" rel="noopener" aria-label="Tenho interesse no Comedouro Pet">
+    <a class="produto" href="#" data-name="Comedouro Pet" data-images="comedouro-pet.jpg,comedouro-pet1.jpg" aria-label="Galeria Comedouro Pet">
       <img src="imagens/comedouro-pet.jpg" alt="Comedouro Duplo de Madeira">
       <span>Comedouro Pet</span>
     </a>
   </section>
+
+  <!-- Modal de galeria -->
+  <div id="product-modal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" aria-label="Fechar modal">×</button>
+      <div class="modal-main">
+        <button class="modal-prev" aria-label="Imagem anterior">‹</button>
+        <img id="modal-image" src="" alt="">
+        <button class="modal-next" aria-label="Próxima imagem">›</button>
+      </div>
+      <div class="modal-caption">
+        <h3 id="modal-title"></h3>
+        <a id="modal-wa" class="link-item" href="#" target="_blank" rel="noopener">Tenho interesse nesse produto</a>
+      </div>
+      <div id="modal-thumbs" class="modal-thumbs"></div>
+    </div>
+  </div>
 
   <footer>
     © 2025 Marcos Marcenaria Artesanal — Feito com ❤️ em São José
@@ -284,6 +372,105 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.body.style.opacity = '1';
     });
+  </script>
+  <script>
+    // Galeria/Modal de produtos
+    (function(){
+      const WA_PHONE = '5548999159246'; // número usado nos links (código do país + DDD + número)
+
+      const modal = document.getElementById('product-modal');
+      const modalImage = document.getElementById('modal-image');
+      const modalTitle = document.getElementById('modal-title');
+      const modalThumbs = document.getElementById('modal-thumbs');
+      const modalWA = document.getElementById('modal-wa');
+      const closeBtn = modal.querySelector('.modal-close');
+      const nextBtn = modal.querySelector('.modal-next');
+      const prevBtn = modal.querySelector('.modal-prev');
+
+      let currentImages = [];
+      let currentIndex = 0;
+
+      function buildImageUrl(fn){
+        if(!fn) return '';
+        fn = fn.trim();
+        if(fn.startsWith('http') || fn.startsWith('/')) return fn;
+        return `imagens/${fn}`;
+      }
+
+      function openModal(images, title){
+        currentImages = images.map(buildImageUrl);
+        currentIndex = 0;
+        modalTitle.textContent = title;
+        renderThumbs();
+        setImage(0);
+        modal.setAttribute('aria-hidden','false');
+        document.body.style.overflow = 'hidden';
+        // set whatsapp link
+        modalWA.href = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent('Tenho interesse nesse produto: '+title)}`;
+      }
+
+      function closeModal(){
+        modal.setAttribute('aria-hidden','true');
+        document.body.style.overflow = '';
+      }
+
+      function setImage(i){
+        if(!currentImages.length) return;
+        currentIndex = (i + currentImages.length) % currentImages.length;
+        modalImage.src = currentImages[currentIndex];
+        modalImage.alt = modalTitle.textContent + ' - imagem ' + (currentIndex+1);
+        // highlight thumb
+        Array.from(modalThumbs.children).forEach((img, idx)=>{
+          img.classList.toggle('active', idx === currentIndex);
+        });
+      }
+
+      function renderThumbs(){
+        modalThumbs.innerHTML = '';
+        currentImages.forEach((src, idx)=>{
+          const t = document.createElement('img');
+          t.src = src;
+          t.alt = modalTitle.textContent + ' miniatura ' + (idx+1);
+          t.addEventListener('click', ()=> setImage(idx));
+          modalThumbs.appendChild(t);
+        });
+      }
+
+      // Attach product click handlers
+      document.querySelectorAll('.produto').forEach(el=>{
+        el.addEventListener('click', (e)=>{
+          e.preventDefault();
+          const name = el.dataset.name || el.querySelector('span')?.textContent || 'Produto';
+          const raw = el.dataset.images;
+          let images = [];
+          if(raw && raw.trim()) images = raw.split(',').map(s=>s.trim()).filter(Boolean);
+          if(!images.length){
+            const img = el.querySelector('img');
+            if(img) images = [ img.getAttribute('src') ];
+          }
+          openModal(images, name);
+        });
+      });
+
+      // buttons
+      closeBtn.addEventListener('click', closeModal);
+      nextBtn.addEventListener('click', ()=> setImage(currentIndex+1));
+      prevBtn.addEventListener('click', ()=> setImage(currentIndex-1));
+
+      // close on overlay click
+      modal.addEventListener('click', (e)=>{
+        if(e.target === modal) closeModal();
+      });
+
+      // keyboard
+      document.addEventListener('keydown', (e)=>{
+        if(modal.getAttribute('aria-hidden') === 'false'){
+          if(e.key === 'Escape') closeModal();
+          if(e.key === 'ArrowRight') setImage(currentIndex+1);
+          if(e.key === 'ArrowLeft') setImage(currentIndex-1);
+        }
+      });
+    })();
   </script>
 </body>
 </html>
