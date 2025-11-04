@@ -196,6 +196,16 @@
       border-radius: 8px;
       object-fit: contain;
     }
+    .modal-main video {
+      max-width: 720px;
+      max-height: 60vh;
+      width: auto;
+      height: auto;
+      display: none;
+      border-radius: 8px;
+      background: #000;
+      object-fit: contain;
+    }
 
     .modal-prev, .modal-next {
       background: rgba(0,0,0,0.6);
@@ -315,19 +325,14 @@
   <h2 class="galeria-title">Nossos Produtos</h2>
   <section class="galeria">
     <!-- Cada produto agora abre uma modal de galeria. Adicione outros nomes de arquivo separados por vírgula em data-images se quiser várias fotos (ex: 'produto-1.jpg,produto-2.jpg') -->
-    <a class="produto" href="#" data-name="Porta Chaves" data-images="porta-chaves.jpg" aria-label="Galeria Porta Chaves">
-      <img src="imagens/porta-chaves.jpg" alt="Porta Chaves Artesanal">
-      <span>Porta Chaves</span>
-    </a>
-
-    <a class="produto" href="#" data-name="Porta Temperos" data-images="porta-temperos.jpg" aria-label="Galeria Porta Temperos">
-      <img src="imagens/porta-temperos.jpg" alt="Porta Temperos de Madeira">
-      <span>Porta Temperos</span>
+    <a class="produto" href="#" data-name="Fruteira" data-images="fruteira.video.mp4,fruteira1.jpg,fruteira2.jpg,fruteira3.jpg,fruteira4.jpg,fruteira5.jpg,fruteira6.jpg,fruteira7.jpg" aria-label="Galeria Fruteira">
+      <img src="imagens/fruteira1.jpg" alt="Fruteira de Madeira">
+      <span>Fruteira</span>
     </a>
 
     <a class="produto" href="#" data-name="Suporte de Pato" data-images="pato-papel-toalha.jpg" aria-label="Galeria Suporte de Pato">
       <img src="imagens/pato-papel-toalha.jpg" alt="Suporte de Pato para Papel Toalha">
-      <span>Suporte de Pato</span>
+      <span>Pato Porta Papel Toalha</span>
     </a>
 
     <a class="produto" href="#" data-name="Gato Trava Porta" data-images="gato-trava-porta.jpg" aria-label="Galeria Gato Trava Porta">
@@ -353,6 +358,8 @@
       <div class="modal-main">
         <button class="modal-prev" aria-label="Imagem anterior">‹</button>
         <img id="modal-image" src="" alt="">
+        <!-- elemento de vídeo: será exibido quando o item atual for vídeo -->
+        <video id="modal-video" controls playsinline preload="metadata"></video>
         <button class="modal-next" aria-label="Próxima imagem">›</button>
       </div>
       <div class="modal-caption">
@@ -380,6 +387,7 @@
 
       const modal = document.getElementById('product-modal');
       const modalImage = document.getElementById('modal-image');
+      const modalVideo = document.getElementById('modal-video');
       const modalTitle = document.getElementById('modal-title');
       const modalThumbs = document.getElementById('modal-thumbs');
       const modalWA = document.getElementById('modal-wa');
@@ -402,7 +410,7 @@
         currentIndex = 0;
         modalTitle.textContent = title;
         renderThumbs();
-        setImage(0);
+        setMedia(0);
         modal.setAttribute('aria-hidden','false');
         document.body.style.overflow = 'hidden';
         // set whatsapp link
@@ -412,27 +420,70 @@
       function closeModal(){
         modal.setAttribute('aria-hidden','true');
         document.body.style.overflow = '';
+        // stop any playing video
+        try { modalVideo.pause(); modalVideo.currentTime = 0; } catch(e){}
       }
 
-      function setImage(i){
+      function isVideoSrc(src){
+        return /\.(mp4|webm|ogg)(\?.*)?$/i.test(src);
+      }
+
+      function setMedia(i){
         if(!currentImages.length) return;
         currentIndex = (i + currentImages.length) % currentImages.length;
-        modalImage.src = currentImages[currentIndex];
-        modalImage.alt = modalTitle.textContent + ' - imagem ' + (currentIndex+1);
+        const src = currentImages[currentIndex];
+
+        if(isVideoSrc(src)){
+          // mostrar vídeo
+          modalImage.style.display = 'none';
+          modalVideo.style.display = 'block';
+          modalVideo.src = src;
+          modalVideo.setAttribute('aria-label', modalTitle.textContent + ' - vídeo ' + (currentIndex+1));
+          modalVideo.load();
+          // tente autoplay (alguns browsers exigem muted para autoplay)
+          modalVideo.muted = false;
+          modalVideo.play().catch(()=>{});
+        } else {
+          // mostrar imagem
+          try { modalVideo.pause(); } catch(e){}
+          modalVideo.src = '';
+          modalVideo.style.display = 'none';
+          modalImage.style.display = 'block';
+          modalImage.src = src;
+          modalImage.alt = modalTitle.textContent + ' - imagem ' + (currentIndex+1);
+        }
+
         // highlight thumb
-        Array.from(modalThumbs.children).forEach((img, idx)=>{
-          img.classList.toggle('active', idx === currentIndex);
+        Array.from(modalThumbs.children).forEach((el, idx)=>{
+          el.classList.toggle('active', idx === currentIndex);
         });
       }
 
       function renderThumbs(){
         modalThumbs.innerHTML = '';
         currentImages.forEach((src, idx)=>{
-          const t = document.createElement('img');
-          t.src = src;
-          t.alt = modalTitle.textContent + ' miniatura ' + (idx+1);
-          t.addEventListener('click', ()=> setImage(idx));
-          modalThumbs.appendChild(t);
+          if(isVideoSrc(src)){
+            const t = document.createElement('video');
+            t.src = src;
+            t.muted = true; // permite autoplay em miniatura
+            t.loop = true;
+            t.playsInline = true;
+            t.autoplay = true;
+            t.width = 72;
+            t.height = 72;
+            t.style.objectFit = 'cover';
+            t.style.borderRadius = '6px';
+            t.style.cursor = 'pointer';
+            t.setAttribute('aria-label', modalTitle.textContent + ' miniatura de vídeo ' + (idx+1));
+            t.addEventListener('click', ()=> setMedia(idx));
+            modalThumbs.appendChild(t);
+          } else {
+            const t = document.createElement('img');
+            t.src = src;
+            t.alt = modalTitle.textContent + ' miniatura ' + (idx+1);
+            t.addEventListener('click', ()=> setMedia(idx));
+            modalThumbs.appendChild(t);
+          }
         });
       }
 
@@ -452,10 +503,10 @@
         });
       });
 
-      // buttons
-      closeBtn.addEventListener('click', closeModal);
-      nextBtn.addEventListener('click', ()=> setImage(currentIndex+1));
-      prevBtn.addEventListener('click', ()=> setImage(currentIndex-1));
+  // buttons
+  closeBtn.addEventListener('click', closeModal);
+  nextBtn.addEventListener('click', ()=> setMedia(currentIndex+1));
+  prevBtn.addEventListener('click', ()=> setMedia(currentIndex-1));
 
       // close on overlay click
       modal.addEventListener('click', (e)=>{
@@ -466,8 +517,8 @@
       document.addEventListener('keydown', (e)=>{
         if(modal.getAttribute('aria-hidden') === 'false'){
           if(e.key === 'Escape') closeModal();
-          if(e.key === 'ArrowRight') setImage(currentIndex+1);
-          if(e.key === 'ArrowLeft') setImage(currentIndex-1);
+          if(e.key === 'ArrowRight') setMedia(currentIndex+1);
+          if(e.key === 'ArrowLeft') setMedia(currentIndex-1);
         }
       });
     })();
